@@ -1,0 +1,9 @@
+# ── dependencies ──────────────────────────────────────────────
+node_modules/
+
+# ── secrets ───────────────────────────────────────────────────
+# Root-level .env (if ever used)
+.env
+
+# The real backend secrets file — never commit this
+backend/.env

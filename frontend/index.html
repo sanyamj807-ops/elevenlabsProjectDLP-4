@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Paste any text and hear it narrated aloud by ElevenLabs AI voices." />
+  <title>ElevenLabs Narrator</title>
+
+  <!-- Google Font: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Ambient glow orbs — purely decorative background effect -->
+  <div class="orbs" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <main class="page">
+    <div class="card">
+
+      <!-- ── Header ───────────────────────────────────── -->
+      <header class="card-header">
+        <div class="logo-icon" aria-hidden="true">
+          <!-- Waveform bars icon -->
+          <svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2"  y="9"  width="2.5" height="6"  rx="1.25"/>
+            <rect x="6"  y="5"  width="2.5" height="14" rx="1.25"/>
+            <rect x="10" y="2"  width="2.5" height="20" rx="1.25"/>
+            <rect x="14" y="5"  width="2.5" height="14" rx="1.25"/>
+            <rect x="18" y="9"  width="2.5" height="6"  rx="1.25"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <h1 class="logo-title">ElevenLabs Narrator</h1>
+          <p class="logo-subtitle">AI-powered text-to-speech</p>
+        </div>
+      </header>
+
+      <!-- ── Text input section ───────────────────────── -->
+      <section class="section" aria-label="Text input">
+        <div class="section-top">
+          <label class="field-label" for="text-input">Text to narrate</label>
+          <!-- Fills the textarea with a random sample paragraph -->
+          <button id="sample-btn" class="btn-ghost" type="button">↺ Random sample</button>
+        </div>
+
+        <textarea
+          id="text-input"
+          class="textarea"
+          placeholder="Paste or type any text here…"
+          maxlength="5000"
+          spellcheck="true"
+          aria-describedby="char-row"
+        ></textarea>
+
+        <!-- Character counter — colour shifts as the limit approaches -->
+        <div id="char-row" class="char-row" aria-live="polite">
+          <span id="char-count">0</span>&thinsp;/&thinsp;5,000
+        </div>
+      </section>
+
+      <!-- ── Model + Voice dropdowns ───────────────────── -->
+      <div class="selectors" role="group" aria-label="Voice settings">
+
+        <div class="select-group">
+          <label class="field-label" for="model-select">Model</label>
+          <div class="select-wrap">
+            <select id="model-select" class="select" disabled aria-label="ElevenLabs model">
+              <option>Loading…</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="select-group">
+          <label class="field-label" for="voice-select">Voice</label>
+          <div class="select-wrap">
+            <select id="voice-select" class="select" disabled aria-label="ElevenLabs voice">
+              <option>Loading…</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── Play button — three inner states ─────────── -->
+      <!--
+        We toggle data-state="idle|loading|playing" in JS.
+        CSS shows/hides each .btn-state div to match.
+      -->
+      <button id="play-btn" class="btn-play" data-state="idle" disabled type="button">
+
+        <!-- State 1: ready to play -->
+        <span class="btn-state state-idle" aria-hidden="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+          Play
+        </span>
+
+        <!-- State 2: waiting for ElevenLabs -->
+        <span class="btn-state state-loading" aria-hidden="true">
+          <span class="spinner"></span>
+          Generating…
+        </span>
+
+        <!-- State 3: audio is playing -->
+        <span class="btn-state state-playing" aria-hidden="true">
+          <span class="waveform" aria-hidden="true">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+          </span>
+          Playing…
+        </span>
+
+      </button>
+
+      <!-- ── Error message ─────────────────────────────── -->
+      <div id="error-msg" class="error-msg" role="alert" aria-live="assertive">
+        <!-- Warning icon -->
+        <svg class="error-icon" viewBox="0 0 20 20" fill="currentColor" width="16" height="16" flex-shrink="0" aria-hidden="true">
+          <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+        </svg>
+        <span id="error-text"></span>
+      </div>
+
+      <!-- Hidden audio element — src set programmatically by app.js -->
+      <audio id="audio-player" class="audio-player"></audio>
+
+    </div><!-- /.card -->
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
