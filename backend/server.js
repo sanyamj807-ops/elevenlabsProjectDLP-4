@@ -32,8 +32,9 @@ require("dotenv").config({ path: path.join(__dirname, ".env") });
 
 // ── [S1] Startup key guard ────────────────────────────────────
 // Fail fast if the key is missing so the developer gets a clear message.
-// We print the name of the variable but NEVER its value.
-if (!process.env.ELEVENLABS_API_KEY) {
+// We print the name of the variable but NEVER its full value.
+const initialKey = (process.env.ELEVENLABS_API_KEY || "").replace(/^["']|["']$/g, "").trim();
+if (!initialKey) {
   console.error(
     "\n❌  ELEVENLABS_API_KEY is not set — server cannot start.\n" +
     "    Fix:\n" +
@@ -123,8 +124,9 @@ const narrateRateLimiter = rateLimit({
  * inside server.js on the Node.js process.
  */
 function elevenlabsHeaders() {
+  const key = (process.env.ELEVENLABS_API_KEY || "").replace(/^["']|["']$/g, "").trim();
   return {
-    "xi-api-key":   process.env.ELEVENLABS_API_KEY,
+    "xi-api-key":   key,
     "Content-Type": "application/json",
   };
 }
@@ -356,9 +358,12 @@ app.post("/api/narrate", narrateRateLimiter, handleSpeak);
 //  START
 // ═════════════════════════════════════════════════════════════
 app.listen(PORT, () => {
+  const currentKey = (process.env.ELEVENLABS_API_KEY || "").replace(/^["']|["']$/g, "").trim();
+  const maskedKey = currentKey.length > 8 ? `${currentKey.slice(0, 6)}...${currentKey.slice(-4)}` : "loaded";
   console.log(`\n✅ ElevenLabs Narrator is running`);
-  console.log(`   Frontend  → http://localhost:${PORT}`);
-  console.log(`   Health    → http://localhost:${PORT}/api/health`);
-  console.log(`   CORS      → ${ALLOWED_ORIGINS.join(", ")}`);
+  console.log(`   Frontend   → http://localhost:${PORT}`);
+  console.log(`   Health     → http://localhost:${PORT}/api/health`);
+  console.log(`   API Key    → loaded (${maskedKey})`);
+  console.log(`   CORS       → ${ALLOWED_ORIGINS.join(", ")}`);
   console.log(`   Rate limit → 10 narrations / min / IP\n`);
 });
